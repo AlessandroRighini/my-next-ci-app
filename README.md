@@ -106,8 +106,11 @@ La CI è configurata per eseguire:
 2. Setup Node.js (v20) con cache npm
 3. Installazione dipendenze (`npm ci`)
 4. Lint (`npm run lint`)
-5. Build Next.js (`npm run build`)
-6. Build Docker (senza push)
+5. Test basilari con `node --test` (`npm run test`)
+6. Build Next.js (`npm run build`)
+7. Build Docker (senza push)
+
+I test attuali sono definiti in `tests/basic.test.mjs` e fungono da smoke test espandibile usando il test runner integrato di Node.js.
 
 ### Workflow (`.github/workflows/ci.yml`)
 
@@ -140,9 +143,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      # Abilita se hai test:
-      # - name: Test
-      #   run: npm test
+      - name: Test
+        run: npm run test
 
       - name: Build Next.js app
         run: npm run build
@@ -175,6 +177,7 @@ jobs:
 | ----------------------- | ------------------------------------------------------ |
 | `npm ci`                | Installazione pulita e riproducibile delle dipendenze  |
 | `npm run lint`          | Analisi statica del codice                             |
+| `npm run test`          | Test basilari con `node --test`                        |
 | `npm run build`         | Compilazione Next.js                                   |
 | `docker/build-push-action` | Costruzione immagine Docker in ambiente CI         |
 
@@ -205,6 +208,7 @@ Prossimi step possibili:
 - Avvio sviluppo: `npm run dev`
 - Build produzione: `npm run build`
 - Avvio in produzione (dopo build): `npm start`
+- Suite di test di base: `npm run test`
 - Build immagine Docker: `docker build -t my-next-ci-app .`
 
 ### Script locale per Docker Scout
