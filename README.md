@@ -106,9 +106,10 @@ La CI è configurata per eseguire:
 2. Setup Node.js (v20) con cache npm
 3. Installazione dipendenze (`npm ci`)
 4. Lint (`npm run lint`)
-5. Test basilari con `node --test` (`npm run test`)
-6. Build Next.js (`npm run build`)
-7. Build Docker (senza push)
+5. Controllo formattazione Prettier (`npm run format:check`)
+6. Test basilari con `node --test` (`npm run test`)
+7. Build Next.js (`npm run build`)
+8. Build Docker (senza push)
 
 I test attuali sono definiti in `tests/basic.test.mjs` e fungono da smoke test espandibile usando il test runner integrato di Node.js.
 
@@ -119,9 +120,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 
 jobs:
   build-and-test:
@@ -134,14 +135,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Lint
         run: npm run lint
+
+      - name: Prettier check
+        run: npm run format:check
 
       - name: Test
         run: npm run test
@@ -173,13 +177,16 @@ jobs:
 
 ### 📍 Cosa fa la CI?
 
-| Step                    | Descrizione                                            |
-| ----------------------- | ------------------------------------------------------ |
-| `npm ci`                | Installazione pulita e riproducibile delle dipendenze  |
-| `npm run lint`          | Analisi statica del codice                             |
-| `npm run test`          | Test basilari con `node --test`                        |
-| `npm run build`         | Compilazione Next.js                                   |
-| `docker/build-push-action` | Costruzione immagine Docker in ambiente CI         |
+| Step                       | Descrizione                                           |
+| -------------------------- | ----------------------------------------------------- |
+| `npm ci`                   | Installazione pulita e riproducibile delle dipendenze |
+| `npm run lint`             | Analisi statica del codice                            |
+| `npm run format:check`     | Verifica della formattazione tramite Prettier         |
+| `npm run test`             | Test basilari con `node --test`                       |
+| `npm run build`            | Compilazione Next.js                                  |
+| `docker/build-push-action` | Costruzione immagine Docker in ambiente CI            |
+
+La configurazione di Prettier è definita in `.prettierrc.json` e impone virgolette singole, trailing comma e larghezza massima 80 caratteri per mantenere lo stile coerente tra team e CI.
 
 Il file completo del workflow è versionato in `.github/workflows/ci.yml`. Ogni volta che apri una pull request o fai push su `main`, GitHub Actions esegue automaticamente i job `build-and-test` e `docker-build` descritti sopra. Puoi estendere quel file per includere step aggiuntivi (test end-to-end, pubblicazione dell'immagine, ecc.) mantenendo tutta la logica CI documentata e riproducibile.
 
@@ -209,6 +216,8 @@ Prossimi step possibili:
 - Build produzione: `npm run build`
 - Avvio in produzione (dopo build): `npm start`
 - Suite di test di base: `npm run test`
+- Formattazione automatica: `npm run format`
+- Verifica formattazione: `npm run format:check`
 - Build immagine Docker: `docker build -t my-next-ci-app .`
 
 ### Script locale per Docker Scout
@@ -229,6 +238,16 @@ chmod +x scripts/docker-scout.sh   # prima esecuzione
 ```
 
 Assicurati che Docker Desktop/Engine sia attivo; in caso contrario lo script si fermerà durante i comandi `docker`.
+
+### Workflow consigliato prima del commit
+
+Per evitare di mandare in CI codice non valido, esegui questi comandi in locale prima di ogni commit:
+
+1. `npm run lint` — verifica delle regole ESLint (import/order, naming, ecc.).
+2. `npm run format:check` — controlla la formattazione in base a `.prettierrc.json`.
+3. `npm run test` — esegue i test basilari (`tests/basic.test.mjs`).
+4. `npm run build` — conferma che la build Next.js vada a buon fine.
+5. `./scripts/docker-scout.sh` — opzionale ma consigliato per generare il report `vulns.report` e bloccare l'app se compaiono CVE critiche.
 
 ---
 

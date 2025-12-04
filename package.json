@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test"
+    "test": "node --test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "next": "16.0.7",
@@ -21,6 +23,9 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.7",
+    "eslint-plugin-check-file": "^2.7.1",
+    "eslint-plugin-import": "^2.29.1",
+    "prettier": "^3.3.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
