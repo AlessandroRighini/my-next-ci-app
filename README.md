@@ -1,5 +1,10 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Aggiornamenti recenti
+
+- Abbiamo sostituito `next.config.ts` con `next.config.mjs` per evitare l'errore di runtime che richiedeva il pacchetto `typescript` dentro l'immagine Docker di produzione, dove preferiamo non installare dipendenze di sviluppo.
+- Abbiamo aggiornato il `Dockerfile` in modo che la fase `runner` copi il nuovo file `next.config.mjs`, mantenendo coerente la configurazione tra build e runtime.
+
 ## Getting Started
 
 First, run the development server:
