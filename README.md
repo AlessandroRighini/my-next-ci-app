@@ -178,6 +178,8 @@ jobs:
 | `npm run build`         | Compilazione Next.js                                   |
 | `docker/build-push-action` | Costruzione immagine Docker in ambiente CI         |
 
+Il file completo del workflow è versionato in `.github/workflows/ci.yml`. Ogni volta che apri una pull request o fai push su `main`, GitHub Actions esegue automaticamente i job `build-and-test` e `docker-build` descritti sopra. Puoi estendere quel file per includere step aggiuntivi (test end-to-end, pubblicazione dell'immagine, ecc.) mantenendo tutta la logica CI documentata e riproducibile.
+
 ---
 
 ## 📝 5. Stato attuale del progetto
@@ -204,6 +206,25 @@ Prossimi step possibili:
 - Build produzione: `npm run build`
 - Avvio in produzione (dopo build): `npm start`
 - Build immagine Docker: `docker build -t my-next-ci-app .`
+
+### Script locale per Docker Scout
+
+Nel percorso `scripts/docker-scout.sh` trovi uno script Bash pensato per l'uso locale (WSL o Git Bash). Lo script:
+
+1. Rimuove un eventuale container `my-next-ci-app` in esecuzione.
+2. Ricostruisce l'immagine `my-next-ci-app:latest`.
+3. Esegue `docker scout cves` salvando il report completo in `./vulns.report`.
+4. Riesegue Scout isolando solo le vulnerabilità critiche (`--only-severity critical --exit-code`) e interrompe il processo se ne rileva.
+5. Avvia il container solo quando la scansione è pulita.
+
+Per usarlo:
+
+```bash
+chmod +x scripts/docker-scout.sh   # prima esecuzione
+./scripts/docker-scout.sh
+```
+
+Assicurati che Docker Desktop/Engine sia attivo; in caso contrario lo script si fermerà durante i comandi `docker`.
 
 ---
 
